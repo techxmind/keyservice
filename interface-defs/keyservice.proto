@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+import "github.com/metaverse/truss/deftree/googlethirdparty/annotations.proto";
+import "google/protobuf/empty.proto";
+
+message EncryptRequest {
+    string key_id = 1;     // 密钥ID
+    string data = 2;   // 需要加密的内容
+}
+
+message EncryptBatchRequest {
+    repeated EncryptRequest items = 1;
+}
+
+message DecryptRequest {
+    string key_id = 1;
+    string cipher = 2;
+}
+
+message DecryptBatchRequest {
+    repeated DecryptRequest items = 1;
+}
+
+message Response {
+    int32 code = 1;
+    string msg = 2;
+    string result = 3;
+}
+
+message BatchResponse {
+    int32 code = 1;
+    string msg = 2;
+    repeated Response results = 3;
+}
+
+message KeyRequest {
+    repeated string key_ids = 1;
+}
+
+message KeyResponse {
+    int32 code = 1;
+    string msg = 2;
+    map<string, string> result = 3;
+}
+
+message Empty {}
+
+service KeyService {
+    rpc Encrypt(EncryptRequest) returns (Response) {
+        option (google.api.http) = {
+            post: "/encrypt"
+            body: "*"
+        };
+    }
+
+    rpc EncryptBatch(EncryptBatchRequest) returns (BatchResponse) {
+        option (google.api.http) = {
+            post: "/encrypt_batch"
+            body: "*"
+        };
+    }
+
+    rpc Decrypt(DecryptRequest) returns (Response) {
+        option (google.api.http) = {
+            post: "/decrypt"
+            body: "*"
+        };
+    }
+
+    rpc DecryptBatch(DecryptBatchRequest) returns (BatchResponse) {
+        option (google.api.http) = {
+            post: "/decrypt_batch"
+            body: "*"
+        };
+    }
+
+    rpc Keys(KeyRequest) returns (KeyResponse) {
+        option (google.api.http) = {
+            post: "/keys"
+            body: "*"
+        };
+    }
+
+    rpc Ping(Empty) returns (Response) {
+        option (google.api.http) = {
+            get: "/ping"
+        };
+    }
+}
